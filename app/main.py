@@ -34,6 +34,8 @@ while True:
     wm.connect()  # Tente de se connecter à un réseau WiFi connu
     
     if wm.is_connected():
+        if OTA.fetch():
+            print("Nouvelle version disponible ! Redémarrer la carte.")
         if dns_started:
             print('Connecté au réseau WiFi:', wm.get_address())
             print('Arrêt du serveur DNS')

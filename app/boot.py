@@ -15,16 +15,16 @@ webrepl.start()
 # Start the connection:
 wm.connect()
 
-
+print("Fais chauffer l'OTA")
 OTA = senko.Senko(
   user="WolfTohsaka", # Required
   repo="RB", # Required
   branch="master", # Optional: Defaults to "master"
   working_dir="app", # Optional: Defaults to "app"
-  files = ["boot.py", "main.py"]
+  files = ["boot.py", "main.py", "relaylib.py"]
 )
 
-
+print("On Update")
 if OTA.update():
     print("Updated to the latest version! Rebooting...")
     machine.reset()
