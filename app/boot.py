@@ -23,3 +23,8 @@ OTA = senko.Senko(
   working_dir="app", # Optional: Defaults to "app"
   files = ["boot.py", "main.py"]
 )
+
+
+if OTA.update():
+    print("Updated to the latest version! Rebooting...")
+    machine.reset()
