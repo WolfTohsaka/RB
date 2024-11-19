@@ -26,5 +26,5 @@ OTA = senko.Senko(
 
 print("On Update")
 if OTA.update():
-    print("Updated to the latest version! Rebooting...")
+    print("MAJ OK, Redémarrage en cours")
     machine.reset()
