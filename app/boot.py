@@ -1,5 +1,6 @@
 import webrepl
 import senko
+import machine
 
 # Import the library:
 from wifi_manager import WifiManager
