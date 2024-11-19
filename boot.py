@@ -1,5 +1,3 @@
-# Download the "wifi_manager.py" file to your device;
-
 # Import the library:
 from wifi_manager import WifiManager
 
