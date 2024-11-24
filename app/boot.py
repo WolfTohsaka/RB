@@ -22,7 +22,7 @@ OTA = senko.Senko(
   repo="RB", # Required
   branch="master", # Optional: Defaults to "master"
   working_dir="app", # Optional: Defaults to "app"
-  files = ["boot.py", "main.py", "relaylib.py"]
+  files = ["boot.py", "main.py", "relaylib.py","templib.py"]
 )
 
 print("On Update")
