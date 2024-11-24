@@ -39,10 +39,3 @@ def resistance_to_temperature(resistance):
     # If no valid range is found
     raise ValueError("Resistance value is not within the valid range of the table")
 
-# Example usage
-resistance_value = 1000  # Replace with your resistance value in ohms
-try:
-    temperature_celsius = resistance_to_temperature(resistance_value)
-    print(f"Temperature: {temperature_celsius:.2f} °C")
-except ValueError as e:
-    print(e)
