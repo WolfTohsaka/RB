@@ -65,7 +65,7 @@ while True:
     else:
         R_unknown = float('inf')  # Si la tension est nulle, R est infinie
 
-    print("R_unknown: {:.2f} Ω".format(R_unknown))
-    
+    print(R_unknown)
+
     utime.sleep(10)
 
