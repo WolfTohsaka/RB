@@ -29,3 +29,4 @@ print("On Update")
 if OTA.update():
     print("MAJ OK, Redémarrage en cours")
     machine.reset()
+print("Update terminé, on passe dans main.py")
