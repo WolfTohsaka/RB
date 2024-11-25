@@ -18,7 +18,7 @@ print("On rentre dans main.py")
 # ruff: noqa: E402
 sys.path.append("")
 
-
+print("on prépare le bluetooth")
 # org.bluetooth.service.environmental_sensing
 _ENV_SENSE_UUID = bluetooth.UUID(0x181A)
 # org.bluetooth.characteristic.temperature
@@ -26,9 +26,11 @@ _ENV_SENSE_TEMP_UUID = bluetooth.UUID(0x2A6E)
 # org.bluetooth.characteristic.gap.appearance.xml
 _ADV_APPEARANCE_GENERIC_THERMOMETER = const(768)
 
+print("on set le timer pour le bacon")
 # How frequently to send advertising beacons.
 _ADV_INTERVAL_MS = 250_000
 
+print("on démarre le serveur GATT")
 # Register GATT server.
 temp_service = aioble.Service(_ENV_SENSE_UUID)
 temp_characteristic = aioble.Characteristic(
@@ -36,10 +38,12 @@ temp_characteristic = aioble.Characteristic(
 )
 aioble.register_services(temp_service)
 
+print("on définit le helper")
 # Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
 def _encode_temperature(temp_deg_c):
     return struct.pack("<h", int(temp_deg_c * 100))
 
+print("on définit sensor_task()")
 async def sensor_task():
     t = 24.5
     while True:
@@ -47,7 +51,7 @@ async def sensor_task():
         t += random.uniform(-0.5, 0.5)
         await asyncio.sleep_ms(1000)
 
-
+print("on définit peripheral_task()")
 # Serially wait for connections. Don't advertise while a central is
 # connected.
 async def peripheral_task():
@@ -60,7 +64,7 @@ async def peripheral_task():
         ) as connection:
             print("Connection from", connection.device)
             await connection.disconnected(timeout_ms=None)
-
+print("on run les 2 en concurrence")
 # Run both tasks.
 async def main():
     t1 = asyncio.create_task(sensor_task())
@@ -68,7 +72,7 @@ async def main():
     await asyncio.gather(t1, t2)
 
 asyncio.run(main())
-
+print("je pense qu'on ne rentrera jamais ici.")
 # Configuration de l'ADC
 adc = ADC(Pin(34))  # Utiliser GPIO34
 adccompensation = ADC(Pin(36))
