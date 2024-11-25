@@ -13,6 +13,7 @@ import bluetooth
 import random
 import struct
 
+print("On rentre dans main.py")
 
 # ruff: noqa: E402
 sys.path.append("")
@@ -96,7 +97,7 @@ def stop_dns_server():
     MicroDNSSrv.Stop()
     print("MicroDNSSrv arrêté. WebREPL démarré")
 
-print("On rentre dans main.py")
+
 
 # Boucle principale
 dns_started = False
