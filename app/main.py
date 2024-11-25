@@ -4,13 +4,78 @@ from wifi_manager import WifiManager
 import relaylib
 from machine import ADC, Pin
 import webrepl
+import templib
+import sys
+from micropython import const
+import asyncio
+import aioble
+import bluetooth
+import random
+import struct
+
+
+# ruff: noqa: E402
+sys.path.append("")
+
+
+# org.bluetooth.service.environmental_sensing
+_ENV_SENSE_UUID = bluetooth.UUID(0x181A)
+# org.bluetooth.characteristic.temperature
+_ENV_SENSE_TEMP_UUID = bluetooth.UUID(0x2A6E)
+# org.bluetooth.characteristic.gap.appearance.xml
+_ADV_APPEARANCE_GENERIC_THERMOMETER = const(768)
+
+# How frequently to send advertising beacons.
+_ADV_INTERVAL_MS = 250_000
+
+# Register GATT server.
+temp_service = aioble.Service(_ENV_SENSE_UUID)
+temp_characteristic = aioble.Characteristic(
+    temp_service, _ENV_SENSE_TEMP_UUID, read=True, notify=True
+)
+aioble.register_services(temp_service)
+
+# Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
+def _encode_temperature(temp_deg_c):
+    return struct.pack("<h", int(temp_deg_c * 100))
+
+async def sensor_task():
+    t = 24.5
+    while True:
+        temp_characteristic.write(_encode_temperature(t), send_update=True)
+        t += random.uniform(-0.5, 0.5)
+        await asyncio.sleep_ms(1000)
+
+
+# Serially wait for connections. Don't advertise while a central is
+# connected.
+async def peripheral_task():
+    while True:
+        async with await aioble.advertise(
+            _ADV_INTERVAL_MS,
+            name="mpy-temp",
+            services=[_ENV_SENSE_UUID],
+            appearance=_ADV_APPEARANCE_GENERIC_THERMOMETER,
+        ) as connection:
+            print("Connection from", connection.device)
+            await connection.disconnected(timeout_ms=None)
+
+# Run both tasks.
+async def main():
+    t1 = asyncio.create_task(sensor_task())
+    t2 = asyncio.create_task(peripheral_task())
+    await asyncio.gather(t1, t2)
+
+asyncio.run(main())
 
 # Configuration de l'ADC
 adc = ADC(Pin(34))  # Utiliser GPIO34
-adc.atten(ADC.ATTN_11DB)  # Atténuation pour lire jusqu'à environ 3.6V
+adccompensation = ADC(Pin(36))
 adc.width(ADC.WIDTH_12BIT)  # Résolution 12 bits
+adccompensation.width(ADC.WIDTH_12BIT)  # Résolution 12 bits
 
-R_reference = 740  # Résistance de référence (740 Ω)
+
+R_reference = 988  # Résistance de référence (988 Ω)
 
 relay1 = Pin(32, Pin.OUT)
 relay2 = Pin(33, Pin.OUT)
@@ -56,12 +121,13 @@ while True:
     
     
     adc_value = adc.read()
+    adccompensation_value = adccompensation.read()
 
-    voltage = (adc_value / 4095) * 3.3  # Conversion en volts
+    voltage = (adc_value - adccompensation / 4095) * 3.3  # Conversion en volts
     
     # Calculer la résistance inconnue (R) avec la loi d'Ohm
     if voltage > 0:  # Éviter la division par zéro
-        R_unknown = R_reference * ((3.3 / voltage) - 1)
+        R_unknown = R_reference * (3.3 / voltage)
     else:
         R_unknown = float('inf')  # Si la tension est nulle, R est infinie
 
