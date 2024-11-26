@@ -40,14 +40,14 @@ aioble.register_services(temp_service)
 
 # Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
 def _encode_temperature(temp_deg_c):
-    return struct.pack(">h", int(temp_deg_c * 100))
+    return struct.pack("<h", int(temp_deg_c * 100))
 
 
 # This would be periodically polling a hardware sensor.
 async def sensor_task():
     t = 24.5
     while True:
-        temp_characteristic.write(2450, send_update=True)
+        temp_characteristic.write(_encode_temperature(t), send_update=True)
         t += random.uniform(-0.5, 0.5)
         await asyncio.sleep_ms(1000)
 
