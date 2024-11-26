@@ -15,6 +15,20 @@ import struct
 
 print("On rentre dans main.py")
 
+print("on setup les ADC")
+adc = ADC(Pin(34))  # Utiliser GPIO34
+adccompensation = ADC(Pin(36))
+adc.width(ADC.WIDTH_12BIT)  # Résolution 12 bits
+adccompensation.width(ADC.WIDTH_12BIT)  # Résolution 12 bits
+
+R_reference = 988  # Résistance de référence (988 Ω)
+
+relay1 = Pin(32, Pin.OUT)
+relay2 = Pin(33, Pin.OUT)
+relay3 = Pin(25, Pin.OUT)
+relay4 = Pin(26, Pin.OUT)
+
+
 # ruff: noqa: E402
 sys.path.append("")
 
@@ -45,11 +59,25 @@ def _encode_temperature(temp_deg_c):
 
 # This would be periodically polling a hardware sensor.
 async def sensor_task():
-    t = 24.5
+    t = 0
     while True:
+        adc_value = adc.read()
+        adccompensation_value = adccompensation.read()
+
+        voltage = (adc_value - adccompensation / 4095) * 3.3  # Conversion en volts
+    
+    # Calculer la résistance inconnue (R) avec la loi d'Ohm
+        if voltage > 0:  # Éviter la division par zéro
+            R_unknown = R_reference * (3.3 / voltage)
+        else:
+            R_unknown = float('inf')  # Si la tension est nulle, R est infinie
+
+        print(R_unknown)
+        t = resistance_to_temperature(R_unknown)
+        
         temp_characteristic.write(_encode_temperature(t), send_update=True)
-        t += random.uniform(-0.5, 0.5)
-        await asyncio.sleep_ms(1000)
+        
+        await asyncio.sleep_ms(2000)
 
 print("on définit peripheral_task()")
 # Serially wait for connections. Don't advertise while a central is
@@ -72,20 +100,12 @@ async def main():
     await asyncio.gather(t1, t2)
 
 asyncio.run(main())
+
 print("je pense qu'on ne rentrera jamais ici.")
 # Configuration de l'ADC
-adc = ADC(Pin(34))  # Utiliser GPIO34
-adccompensation = ADC(Pin(36))
-adc.width(ADC.WIDTH_12BIT)  # Résolution 12 bits
-adccompensation.width(ADC.WIDTH_12BIT)  # Résolution 12 bits
 
 
-R_reference = 988  # Résistance de référence (988 Ω)
 
-relay1 = Pin(32, Pin.OUT)
-relay2 = Pin(33, Pin.OUT)
-relay3 = Pin(25, Pin.OUT)
-relay4 = Pin(26, Pin.OUT)
 
 # Fonction pour démarrer le serveur DNS
 def start_dns_server():
@@ -125,18 +145,7 @@ while True:
             dns_started = start_dns_server()
     
     
-    adc_value = adc.read()
-    adccompensation_value = adccompensation.read()
 
-    voltage = (adc_value - adccompensation / 4095) * 3.3  # Conversion en volts
-    
-    # Calculer la résistance inconnue (R) avec la loi d'Ohm
-    if voltage > 0:  # Éviter la division par zéro
-        R_unknown = R_reference * (3.3 / voltage)
-    else:
-        R_unknown = float('inf')  # Si la tension est nulle, R est infinie
-
-    print(R_unknown)
 
     utime.sleep(10)
 
