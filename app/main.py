@@ -64,7 +64,7 @@ async def sensor_task():
         adc_value = adc.read()
         adccompensation_value = adccompensation.read()
 
-        voltage = (adc_value - adccompensation_value / 4095) * 3.3  # Conversion en volts
+        voltage = (adc_value / 4095) * 3.3  # Conversion en volts
     
     # Calculer la résistance inconnue (R) avec la loi d'Ohm
         if voltage > 0:  # Éviter la division par zéro
