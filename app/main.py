@@ -40,7 +40,7 @@ aioble.register_services(temp_service)
 
 # Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
 def _encode_temperature(temp_deg_c):
-    return struct.pack("<h", int(temp_deg_c * 100))
+    return struct.pack(">h", int(temp_deg_c * 100))
 
 
 # This would be periodically polling a hardware sensor.
