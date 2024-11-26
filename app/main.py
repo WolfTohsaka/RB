@@ -62,18 +62,20 @@ async def sensor_task():
     t = 0
     while True:
         adc_value = adc.read()
+        print(adc_value)
         adccompensation_value = adccompensation.read()
 
         voltage = (adc_value / 4095) * 3.3  # Conversion en volts
-    
+        print(voltage)
     # Calculer la résistance inconnue (R) avec la loi d'Ohm
         if voltage > 0:  # Éviter la division par zéro
             R_unknown = R_reference * (3.3 / voltage)
+            t = templib.resistance_to_temperature(R_unknown)
         else:
             R_unknown = float('inf')  # Si la tension est nulle, R est infinie
 
         print(R_unknown)
-        t = resistance_to_temperature(R_unknown)
+        
         
         temp_characteristic.write(_encode_temperature(t), send_update=True)
         
