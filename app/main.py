@@ -51,6 +51,7 @@ async def sensor_task():
         t += random.uniform(-0.5, 0.5)
         print(t)
         print(_encode_temperature(t).hex())
+        print(Temp)
         await asyncio.sleep_ms(1000)
 
 print("on définit peripheral_task()")
