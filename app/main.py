@@ -50,7 +50,7 @@ async def sensor_task():
         temp_characteristic.write(_encode_temperature(t), send_update=True)
         t += random.uniform(-0.5, 0.5)
         print(t)
-        print(_encode_temperature(t))
+        print(_encode_temperature(t).hex())
         await asyncio.sleep_ms(1000)
 
 print("on définit peripheral_task()")
