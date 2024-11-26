@@ -48,7 +48,7 @@ async def sensor_task():
     t = 24.5
     while True:
         temp_characteristic.write(_encode_temperature(t), send_update=True)
-        t += random.uniform(-0.5, 0.5)
+        # t += random.uniform(-0.5, 0.5)
         await asyncio.sleep_ms(1000)
 
 print("on définit peripheral_task()")
@@ -58,7 +58,7 @@ async def peripheral_task():
     while True:
         async with await aioble.advertise(
             _ADV_INTERVAL_MS,
-            name="mpy-temp",
+            name="RelayBox",
             services=[_ENV_SENSE_UUID],
             appearance=_ADV_APPEARANCE_GENERIC_THERMOMETER,
         ) as connection:
