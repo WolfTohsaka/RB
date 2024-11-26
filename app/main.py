@@ -45,7 +45,7 @@ def _encode_temperature(temp_deg_c):
 
 print("on définit sensor_task()")
 async def sensor_task():
-    t = 24.5
+    t = 24
     while True:
         temp_characteristic.write(_encode_temperature(t), send_update=True)
         # t += random.uniform(-0.5, 0.5)
