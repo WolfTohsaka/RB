@@ -41,7 +41,7 @@ aioble.register_services(temp_service)
 print("on définit le helper")
 # Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
 def _encode_temperature(temp_deg_c):
-    return struct.pack("<h", int(temp_deg_c * 10))
+    return struct.pack("<h", int(temp_deg_c))
 
 print("on définit sensor_task()")
 async def sensor_task():
