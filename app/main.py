@@ -70,7 +70,6 @@ async def sensor_task():
     # Calculer la résistance inconnue (R) avec la loi d'Ohm
         if voltage > 0:  # Éviter la division par zéro
             R_unknown = R_reference * (3.3 / voltage)
-            print("jean-chibre")
             t = templib.resistance_to_temperature(R_unknown)
         else:
             R_unknown = float('inf')  # Si la tension est nulle, R est infinie
